@@ -1,0 +1,37 @@
+import { Router } from 'express';
+import { body } from 'express-validator';
+// import bcrypt from 'bcrypt';
+
+import register from '@/controllers/auth/register';
+import validationError from '@/middlewares/validationError';
+
+const router = Router();
+
+router.post(
+  '/register',
+  body('name').trim().notEmpty().withMessage('Name is required'),
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Invalid email address')
+    .custom(async () => {
+      //TODO
+    }),
+  body('password')
+    .trim()
+    .notEmpty()
+    .withMessage('Password is required')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 character long'),
+  body('role')
+    .notEmpty()
+    .withMessage('Role is required')
+    .isIn(['user', 'admin'])
+    .withMessage('Role is not support'),
+  validationError,
+  register,
+);
+
+export default router;
