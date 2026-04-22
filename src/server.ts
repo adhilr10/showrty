@@ -8,6 +8,7 @@ import config from './config';
 import corsOptions from './lib/cors';
 import router from './routes';
 import { logger, logtail } from './lib/winston';
+import { connectDatabase, disconnectDatabase } from './lib/mongoose';
 
 const server = express();
 
@@ -26,6 +27,8 @@ server.get('/', (req, res) => {
 // IIFE
 (async function (): Promise<void> {
   try {
+    await connectDatabase();
+
     server.use('/', router);
 
     server.listen(config.PORT, () => {
@@ -44,7 +47,7 @@ server.get('/', (req, res) => {
 const serverTermination = async (signal: NodeJS.Signals): Promise<void> => {
   try {
     // Disconnect from database
-    // await disconnectDatabase();
+    await disconnectDatabase();
     // Log a warning indicating the server is shutting down
     logger.info('Server shutdown', signal);
 

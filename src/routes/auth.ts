@@ -4,11 +4,14 @@ import { body } from 'express-validator';
 
 import register from '@/controllers/auth/register';
 import validationError from '@/middlewares/validationError';
+import expressRateLimit from '@/lib/expressRateLimit';
+import User from '@/models/user';
 
 const router = Router();
 
 router.post(
   '/register',
+  expressRateLimit('basic'),
   body('name').trim().notEmpty().withMessage('Name is required'),
   body('email')
     .trim()
@@ -16,8 +19,11 @@ router.post(
     .withMessage('Email is required')
     .isEmail()
     .withMessage('Invalid email address')
-    .custom(async () => {
-      //TODO
+    .custom(async (value) => {
+      const userExists = await User.exists({email: value}).exec()
+      if (userExists) {
+        throw new Error("This email already in use")
+      }
     }),
   body('password')
     .trim()
