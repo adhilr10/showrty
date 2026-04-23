@@ -7,6 +7,9 @@ import validationError from '@/middlewares/validationError';
 import expressRateLimit from '@/lib/expressRateLimit';
 import User from '@/models/user';
 import login from '@/controllers/auth/login';
+import logout from '@/controllers/auth/logout';
+import authentication from '@/middlewares/authentication';
+import refreshToken from '@/controllers/auth/refreshToken';
 
 const router = Router();
 
@@ -79,5 +82,9 @@ router.post(
   validationError,
   login,
 );
+
+router.delete('/logout', expressRateLimit('basic'), authentication, logout);
+
+router.get('/refreshToken', expressRateLimit('basic'), refreshToken);
 
 export default router;
