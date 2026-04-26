@@ -10,6 +10,8 @@ import login from '@/controllers/auth/login';
 import logout from '@/controllers/auth/logout';
 import authentication from '@/middlewares/authentication';
 import refreshToken from '@/controllers/auth/refreshToken';
+import forgetPassword from '@/controllers/auth/forgetPassword';
+import resetPassword from '@/controllers/auth/resetPassword';
 
 const router = Router();
 
@@ -86,5 +88,37 @@ router.post(
 router.delete('/logout', expressRateLimit('basic'), authentication, logout);
 
 router.get('/refreshToken', expressRateLimit('basic'), refreshToken);
+
+router.post(
+  '/forget-password',
+  expressRateLimit('basic'),
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Invalid Email address')
+    .custom(async (email) => {
+      const userExists = User.exists({ email }).exec();
+
+      if (!userExists) {
+        throw new Error('No user found with this email');
+      }
+    }),
+  validationError,
+  forgetPassword,
+);
+
+router.post(
+  'reset-password',
+  expressRateLimit('passReset'),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 character long'),
+    validationError,
+    resetPassword
+
+);
 
 export default router;

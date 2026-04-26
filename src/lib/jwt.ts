@@ -22,19 +22,30 @@ const generateRefreshToken = (payload: TokenPayload) => {
   return token;
 };
 
-//verify access token
+const generatePasswordResetToken = (payload: ResetLinkPayload) => {
+  const resetToken = jwt.sign(payload, config.JWT_PASSWORD_RESET_SECRET, {
+    expiresIn: '1h',
+  });
+  return resetToken;
+};
+
 const verifyAccessToken = (accessToken: string): string | JwtPayload => {
   return jwt.verify(accessToken, config.JWT_ACCESS_TOKEN_SECRET);
 };
 
-//verify refresh token
 const verifyRefreshToken = (refreshToken: string): string | JwtPayload => {
   return jwt.verify(refreshToken, config.JWT_REFRESH_TOKEN_SECRET);
+};
+
+const verifyPasswordResetToken = (resetToken: string): string | JwtPayload => {
+  return jwt.verify(resetToken, config.JWT_PASSWORD_RESET_SECRET);
 };
 
 export {
   generateAccessToken,
   generateRefreshToken,
+  generatePasswordResetToken,
   verifyAccessToken,
   verifyRefreshToken,
+  verifyPasswordResetToken,
 };
