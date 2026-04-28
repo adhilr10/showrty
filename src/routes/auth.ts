@@ -110,7 +110,7 @@ router.post(
 );
 
 router.post(
-  'reset-password',
+  '/reset-password',
   expressRateLimit('passReset'),
   body('password')
     .notEmpty()
