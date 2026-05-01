@@ -21,6 +21,7 @@ const config = {
   JWT_PASSWORD_RESET_SECRET: process.env.JWT_PASSWORD_RESET_SECRET!,
   SMTP_AUTH_USERNAME: process.env.SMTP_AUTH_USERNAME!,
   SMTP_AUTH_PASS: process.env.SMTP_AUTH_PASS!,
+  CLIENT_ORIGIN: process.env.CLIENT_ORIGIN!,
 };
 
 export default config;
