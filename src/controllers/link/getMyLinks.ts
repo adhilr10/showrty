@@ -4,6 +4,7 @@ import type { SortOrder } from 'mongoose';
 
 import { logger } from '@/lib/winston';
 import Link from '@/models/link';
+import { generateNextLink, generatePrevLink } from '@/utils';
 
 const getMyLinks = async (req: Request, res: Response): Promise<void> => {
   const userId = req.userId;
@@ -31,10 +32,29 @@ const getMyLinks = async (req: Request, res: Response): Promise<void> => {
       .where('title', searchRegex)
       .exec();
 
+    //pagination
+    const nextLink = generateNextLink({
+      baseUrl: req.baseUrl,
+      search,
+      sortby,
+      offset: Number(offset),
+      limit: Number(limit),
+      total,
+    });
+    const prevLink = generatePrevLink({
+      baseUrl: req.baseUrl,
+      search,
+      sortby,
+      offset: Number(offset),
+      limit: Number(limit),
+    });
+
     res.status(200).json({
       total,
       offset: Number(offset),
       limit: Number(limit),
+      next: nextLink,
+      prev: prevLink,
       links,
     });
   } catch (err) {

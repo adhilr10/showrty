@@ -14,4 +14,5 @@ export type GenLinkProps = {
   sortby?: string;
   offset: number;
   limit: number;
+  total: number;
 };
