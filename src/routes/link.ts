@@ -9,6 +9,7 @@ import createShortLink from '@/controllers/link/createShortLink';
 import Link from '@/models/link';
 import getMyLinks from '@/controllers/link/getMyLinks';
 import updateLinkById from '@/controllers/link/updateLinkById';
+import deleteLinkById from '@/controllers/link/deleteLinkById';
 
 const router = Router();
 
@@ -73,7 +74,17 @@ router.patch(
         throw new Error('This backHalf is already in use');
       }
     }),
-    validationError,
-    updateLinkById
+  validationError,
+  updateLinkById,
+);
+
+router.delete(
+  '/:linkId',
+  expressRateLimit('basic'),
+  authentication,
+  authorization(['user', 'admin']),
+  param('linkId').isMongoId().withMessage('Invalid link id'),
+  validationError,
+  deleteLinkById,
 );
 export default router;
