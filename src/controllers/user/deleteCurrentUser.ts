@@ -1,4 +1,5 @@
 import { logger } from '@/lib/winston';
+import Link from '@/models/link';
 import User from '@/models/user';
 
 import type { Request, Response } from 'express';
@@ -9,6 +10,7 @@ const deleteCurrentUser = async (
 ): Promise<void> => {
   const userId = req.userId;
   try {
+    await Link.deleteMany({ creator: userId });
     await User.deleteOne({ _id: userId });
     res.sendStatus(204);
   } catch (err) {
@@ -20,4 +22,4 @@ const deleteCurrentUser = async (
   }
 };
 
-export default deleteCurrentUser
+export default deleteCurrentUser;
