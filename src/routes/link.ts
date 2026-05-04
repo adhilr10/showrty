@@ -8,6 +8,7 @@ import validationError from '@/middlewares/validationError';
 import createShortLink from '@/controllers/link/createShortLink';
 import Link from '@/models/link';
 import getMyLinks from '@/controllers/link/getMyLinks';
+import updateLinkById from '@/controllers/link/updateLinkById';
 
 const router = Router();
 
@@ -48,7 +49,31 @@ router.get(
     .optional()
     .isInt({ min: 0 })
     .withMessage('Offset must be positive number'),
+  validationError,
+  getMyLinks,
+);
+
+router.patch(
+  '/:linkId',
+  expressRateLimit('basic'),
+  authentication,
+  authorization(['user', 'admin']),
+  param('linkId').isMongoId().withMessage('Invalid link id'),
+  body('title').optional(),
+  body('destination')
+    .optional()
+    .isURL()
+    .withMessage('Destination must be in url format'),
+  body('backHalf')
+    .optional()
+    .trim()
+    .custom(async (backHalf) => {
+      const backHalfExist = await Link.exists({ backHalf }).exec();
+      if (backHalfExist) {
+        throw new Error('This backHalf is already in use');
+      }
+    }),
     validationError,
-    getMyLinks
+    updateLinkById
 );
 export default router;
